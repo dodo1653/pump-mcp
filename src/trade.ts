@@ -63,7 +63,7 @@ async function signSimulateSend(tx: VersionedTransaction, signers: Keypair[], mi
   const me = signers[signers.length - 1].publicKey.toBase58()
   let solChange = NaN, tokenChange = NaN, feeSol = NaN
   try {
-    const t: any = await rpc('getTransaction', [signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0, commitment: 'confirmed' }])
+    const t: any = await rpc('getTransaction', [signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 1, commitment: 'confirmed' }])
     const keys = t.transaction.message.accountKeys.map((k: any) => k.pubkey || k)
     const i = keys.indexOf(me)
     if (i >= 0) solChange = (t.meta.postBalances[i] - t.meta.preBalances[i]) / 1e9

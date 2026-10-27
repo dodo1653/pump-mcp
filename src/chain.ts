@@ -66,7 +66,22 @@ export const curveProgress = (c: { rTok: number; complete: boolean }) => (c.comp
 export async function getCurve(mint: string): Promise<Curve | null> {
   const res: any = await rpc('getAccountInfo', [curveAddress(mint), { encoding: 'base64' }])
   if (!res?.value) return null
-  return decodeCurve(Buffer.from(res.value.data[0], 'base64'))
+  const c = decodeCurve(Buffer.from(res.value.data[0], 'base64'))
+  if (!c.complete && !c.solQuoted) {
+    // a curve account in a layout we don't read: take the reserves from pump.fun's own event on the latest trade
+    const t = await lastTrade(mint).catch(() => null)
+    if (t) Object.assign(c, { vSol: t.vSol, vTok: t.vTok, rSol: t.rSol, rTok: t.rTok, solQuoted: true })
+  }
+  return c
+}
+export async function lastTrade(mint: string): Promise<TradeEv | null> {
+  const sigs: any[] = await rpc('getSignaturesForAddress', [curveAddress(mint), { limit: 5 }])
+  for (const s of sigs.filter((x) => !x.err)) {
+    const t: any = await rpc('getTransaction', [s.signature, { encoding: 'json', maxSupportedTransactionVersion: 1 }])
+    const ev = eventsFromLogs(t?.meta?.logMessages || []).filter((e) => e.kind === 'trade' && e.mint === mint) as TradeEv[]
+    if (ev.length) return ev[ev.length - 1]
+  }
+  return null
 }
 
 // ---------------------------------------------------------------- pump.fun events (anchor: sha256("event:<Name>")[0..8] + borsh)

@@ -62,7 +62,7 @@ export function stats(c: Launch, solUsd: number) {
   return {
     priceSol: price, mcSol, mcUsd: mcSol * solUsd, progress: curveProgress(c),
     buys5m: r5.filter((x) => x.buy).length, sells5m: r5.filter((x) => !x.buy).length,
-    netSol5m: r5.reduce((s, x) => s + (x.buy ? x.sol : -x.sol), 0),
+    netSol5m: r5.filter((x) => x.user !== c.creator).reduce((s, x) => s + (x.buy ? x.sol : -x.sol), 0),   // the dev's own buys are not demand
     devPct: (c.devTokens / 1e9) * 100, devSold: c.devPeak > 0 && c.devTokens < c.devPeak * 0.5,
     bundlePct: (c.bundleTokens / 1e9) * 100,
   }

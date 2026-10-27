@@ -20,10 +20,12 @@ const guard = (fn: (a: any) => Promise<any>) => async (a: any) => { try { return
 // ---------------------------------------------------------------- read tools
 server.registerTool('pump_new_launches', {
   title: 'New pump.fun launches',
-  description: 'Coins launched on pump.fun since this server started watching (live from the chain), with market cap, bonding-curve progress, buys/sells, unique buyers, the dev\'s holding and whether the dev sold, and bundle buys in the launch block. Sort by newest, hot (net SOL in over the last 5 minutes) or mcap.',
+  description: 'Coins launched on pump.fun since this server started watching (live from the chain), with market cap, bonding-curve progress, buys/sells, unique buyers, the dev\'s holding and whether the dev sold, and bundle buys in the launch block. Sort by newest, hot (net SOL in from buyers other than the dev over the last 5 minutes) or mcap.',
   inputSchema: { limit: z.number().int().min(1).max(50).default(10), sort: z.enum(['newest', 'hot', 'mcap']).default('newest'), min_mcap_usd: z.number().min(0).default(0), hide_dev_sold: z.boolean().default(false) },
   annotations: { readOnlyHint: true },
 }, guard(async ({ limit, sort, min_mcap_usd, hide_dev_sold }) => {
+  // the feed only knows what it has seen: right after start, give it up to 25 s to gather launches
+  for (let i = 0; i < 50 && (!feed.since || Date.now() - feed.since < 25_000) && launches.size < limit * 3; i++) await new Promise((r) => setTimeout(r, 500))
   const su = await solPrice()
   let list = [...launches.values()].map((c) => ({ c, s: stats(c, su) })).filter(({ s }) => s.mcUsd >= min_mcap_usd).filter(({ s }) => !hide_dev_sold || !s.devSold)
   if (sort === 'newest') list.sort((a, b) => b.c.createdAt - a.c.createdAt)
@@ -85,7 +87,7 @@ server.registerTool('pump_coin', {
 server.registerTool('pump_dev_history', {
   title: 'Dev history',
   description: 'The coins a wallet has launched on pump.fun (from its recent on-chain history) and how each one is doing now: graduated, still on the curve, or dead. Pass a wallet, or a coin\'s mint to check that coin\'s dev.',
-  inputSchema: { wallet: z.string().optional(), mint: z.string().optional(), scan: z.number().int().min(20).max(1000).default(200).describe('how many of the wallet\'s latest transactions to scan') },
+  inputSchema: { wallet: z.string().optional(), mint: z.string().optional(), scan: z.number().int().min(20).max(1000).default(150).describe('how many of the wallet\'s latest transactions to scan') },
   annotations: { readOnlyHint: true },
 }, guard(async ({ wallet, mint, scan }) => {
   if (!wallet && mint) { const c = await getCurve(mint); wallet = c?.creator || launches.get(mint)?.creator || undefined; if (!wallet) return fail('Could not find that coin\'s dev from its curve.') }
@@ -94,17 +96,19 @@ server.registerTool('pump_dev_history', {
   const ok = sigs.filter((s) => !s.err)
   const created: { mint: string; symbol: string; name: string; t: number }[] = []
   let i = 0
+  const until = Date.now() + 25_000                       // answer within ~25 s even on a slow RPC; say how far it got
   const worker = async () => {
-    while (i < ok.length) {
+    while (i < ok.length && Date.now() < until) {
       const s = ok[i++]
       try {
-        const t: any = await rpc('getTransaction', [s.signature, { encoding: 'json', maxSupportedTransactionVersion: 0 }])
+        const t: any = await rpc('getTransaction', [s.signature, { encoding: 'json', maxSupportedTransactionVersion: 1 }])
         for (const e of eventsFromLogs(t?.meta?.logMessages || [])) if (e.kind === 'create' && (e.creator === wallet || e.user === wallet)) created.push({ mint: e.mint, symbol: e.symbol, name: e.name, t: (s.blockTime || 0) * 1000 })
       } catch {}
     }
   }
   await Promise.all([worker(), worker(), worker(), worker()])
-  if (!created.length) return text(`${wallet} launched no pump.fun coins in its last ${ok.length} transactions.`)
+  const scanned = Math.min(i, ok.length)
+  if (!created.length) return text(`${wallet} launched no pump.fun coins in its last ${scanned} transactions${scanned < ok.length ? ` (stopped at ${scanned} of ${ok.length} on time; a faster RPC scans more)` : ''}.`)
   const su = await solPrice()
   const curves: any = await rpc('getMultipleAccounts', [created.map((c) => curveAddress(c.mint)), { encoding: 'base64' }])
   const cv = new Map(created.map((c, k) => [c.mint, curves?.value?.[k] ? decodeCurve(Buffer.from(curves.value[k].data[0], 'base64')) : null]))
@@ -115,7 +119,7 @@ server.registerTool('pump_dev_history', {
     if (!k) return `$${c.symbol} ${c.mint} · ${ago(c.t)} ago · no curve found`
     if (k.complete) { const p = bestPair(pairs, c.mint); return `$${c.symbol} ${c.mint} · ${ago(c.t)} ago · GRADUATED · MC now ${p ? usd(p.marketCap || p.fdv || 0) : '?'}` }
     const mc = curvePrice(k) * 1e9 * su
-    return `$${c.symbol} ${c.mint} · ${ago(c.t)} ago · on the curve ${pct(curveProgress(k))} · MC ${usd(mc)}${mc < 6000 ? ' (dead)' : ''}`
+    return `$${c.symbol} ${c.mint} · ${ago(c.t)} ago · on the curve ${pct(curveProgress(k))} · MC ${usd(mc)}${mc < 6000 && Date.now() - c.t > 3_600_000 ? ' (dead)' : ''}`
   })
   return text(`${wallet} launched ${created.length} coin(s) in its last ${ok.length} transactions, ${grads.length} graduated:\n` + rows.join('\n'))
 }))
