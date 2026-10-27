@@ -2,24 +2,25 @@ PUMPMCP ($PUMPMCP): X posts. Each main post is under 280 characters. Links go in
 
 NAME: PUMPMCP
 TICKER: PUMPMCP
-BIO: pump.fun, inside your AI. Open-source MCP server: Claude, Cursor or any agent can watch launches, check devs and trade pump.fun from a chat. Your key never leaves your machine. $PUMPMCP
+PUMP.FUN DESCRIPTION: pump.fun, inside your AI. Open-source MCP server: your AI watches launches, catches dev buys and bundles, and trades for you. Key never leaves your machine.
+BIO: pump.fun, inside your AI. Open-source MCP server: Claude, Cursor or any agent watches launches, checks devs and trades pump.fun from a chat. Your key never leaves your machine. $PUMPMCP
 
 --- 1. LAUNCH (pin it, attach the 34 s video) ---
-pump.fun, inside your AI.
+the trenches are rigged. dev buys, bundles, copycats.
 
-PUMPMCP is an open-source MCP server. Claude, Cursor or any agent can watch every launch, check the dev and trade pump.fun from a chat.
+so we gave your AI eyes.
 
-Read straight from Solana. Your key never leaves your machine.
+PUMPMCP is an open-source MCP server: Claude, Cursor or any agent can watch every pump.fun launch, check the dev and trade from a chat.
 
 $PUMPMCP
-  reply: github.com/dodo1653/pump-mcp
-  reply: [site]
-  reply: CA: [CA]
+  reply 1: github.com/dodo1653/pump-mcp
+  reply 2: [site]
+  reply 3: CA: [CA]
 
 --- 2. THE DEMO (screenshot of the verdict from the real session) ---
 asked Claude for the hottest launch on pump.fun.
 
-it pulled the coin, checked the dev, and told me:
+it pulled the coin, checked the dev, and said:
 "of the 3.07 SOL in, 2.46 is the dev's own buy."
 
 the "hot" coin was the dev buying it himself.
@@ -53,20 +54,29 @@ open source, MIT. $PUMPMCP
 --- 5. TRUST ---
 how PUMPMCP handles your money:
 
-- reads pump.fun's own events from Solana
+- reads pump.fun's own events straight from Solana
 - trades signed on your machine, key never sent
 - every tx simulated before it's sent
 - capped per trade
 - off until you turn it on
 
-read every line on GitHub. $PUMPMCP
+every line is on GitHub. $PUMPMCP
 
---- 6. SHORT ---
+--- 6. DEV CHECK ---
+before you ape, ask your AI one thing:
+
+"how did this dev's last coins end?"
+
+PUMPMCP pulls every coin the wallet launched and how each one died, straight from the chain.
+
+$PUMPMCP
+
+--- 7. SHORT ---
 your AI can read the trenches now.
 
 $PUMPMCP
 
---- 7. FOR DEVS (quote any "AI agent" post) ---
+--- 8. FOR DEVS (quote any "AI agent" post) ---
 agents that can actually touch pump.fun.
 
 MCP server, 10 tools, reads the chain directly, signs locally.
