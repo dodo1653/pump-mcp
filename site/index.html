@@ -244,7 +244,7 @@ if (P.mint) {
 
 // ---------------------------------------------------------------- install boxes
 const CMD = {
-  code: '<span class="p">$ </span>claude mcp add pump -- npx -y github:dodo1653/pump-mcp\n<span class="p"># windows: </span>claude mcp add pump -- cmd /c npx -y github:dodo1653/pump-mcp',
+  code: '<span class="p">$ </span>claude mcp add pump -- npx -y github:dodo1653/pump-mcp\n<span class="p"># on windows, put cmd /c before npx</span>',
   desktop: esc('{\n  "mcpServers": {\n    "pump": {\n      "command": "npx",\n      "args": ["-y", "github:dodo1653/pump-mcp"]\n    }\n  }\n}'),
   cursor: esc('// .cursor/mcp.json\n{\n  "mcpServers": {\n    "pump": { "command": "npx", "args": ["-y", "github:dodo1653/pump-mcp"] }\n  }\n}'),
 }
