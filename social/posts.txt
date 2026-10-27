@@ -1,0 +1,74 @@
+PUMPMCP ($PUMPMCP): X posts. Each main post is under 280 characters. Links go in the first reply (no blue check).
+
+NAME: PUMPMCP
+TICKER: PUMPMCP
+BIO: pump.fun, inside your AI. Open-source MCP server: Claude, Cursor or any agent can watch launches, check devs and trade pump.fun from a chat. Your key never leaves your machine. $PUMPMCP
+
+--- 1. LAUNCH (pin it, attach the 34 s video) ---
+pump.fun, inside your AI.
+
+PUMPMCP is an open-source MCP server. Claude, Cursor or any agent can watch every launch, check the dev and trade pump.fun from a chat.
+
+Read straight from Solana. Your key never leaves your machine.
+
+$PUMPMCP
+  reply: github.com/dodo1653/pump-mcp
+  reply: [site]
+  reply: CA: [CA]
+
+--- 2. THE DEMO (screenshot of the verdict from the real session) ---
+asked Claude for the hottest launch on pump.fun.
+
+it pulled the coin, checked the dev, and told me:
+"of the 3.07 SOL in, 2.46 is the dev's own buy."
+
+the "hot" coin was the dev buying it himself.
+
+that's PUMPMCP. $PUMPMCP
+
+--- 3. INSTALL ---
+one line:
+
+claude mcp add pump -- npx -y github:dodo1653/pump-mcp
+
+then ask your AI anything about pump.fun. read-only until you switch trading on.
+
+$PUMPMCP
+
+--- 4. THE TOOLS ---
+10 tools your AI picks on its own:
+
+pump_new_launches
+pump_coin
+pump_dev_history
+pump_wallet
+pump_search
+pump_buy / pump_sell
+pump_launch
+pump_claim_creator_fees
+pump_status
+
+open source, MIT. $PUMPMCP
+
+--- 5. TRUST ---
+how PUMPMCP handles your money:
+
+- reads pump.fun's own events from Solana
+- trades signed on your machine, key never sent
+- every tx simulated before it's sent
+- capped per trade
+- off until you turn it on
+
+read every line on GitHub. $PUMPMCP
+
+--- 6. SHORT ---
+your AI can read the trenches now.
+
+$PUMPMCP
+
+--- 7. FOR DEVS (quote any "AI agent" post) ---
+agents that can actually touch pump.fun.
+
+MCP server, 10 tools, reads the chain directly, signs locally.
+
+github.com/dodo1653/pump-mcp

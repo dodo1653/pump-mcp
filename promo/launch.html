@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PUMPMCP launch cut</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #030504; font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; color: #eef3f0; }
+  .layer { position: absolute; inset: 0; }
+  #bg { z-index: 0; } #persp { z-index: 1; } #logo, #term { z-index: 2; } #stage { z-index: 3; pointer-events: none; } #end { z-index: 4; }
+  #bg { background: radial-gradient(1100px 700px at 50% 45%, rgba(63,224,142,.10), transparent 70%), linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 64px 64px, linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 64px 64px; }
+  .g { color: #3fe08e; }
+  .hl { background: #3fe08e; color: #03140a; padding: 0 .14em; border-radius: .12em; }
+  .kin { position: absolute; white-space: nowrap; }
+  .kin span { display: inline-block; margin: 0 .1em; }
+  .caret { display: inline-block; width: .09em; height: .9em; background: #3fe08e; vertical-align: -.1em; margin-left: .06em; }
+  /* the chat window */
+  #persp { position: absolute; inset: 0; perspective: 2400px; }
+  #chat { position: absolute; left: 50%; top: 50%; width: 1500px; height: 960px; margin: -480px 0 0 -750px; border-radius: 24px; background: linear-gradient(180deg, #0d120f, #070a08); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 60px 160px rgba(0,0,0,.7), 0 0 120px rgba(63,224,142,.08); overflow: hidden; transform-origin: 50% 50%; }
+  #chat .bar { display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 22px; border-bottom: 1px solid rgba(255,255,255,.08); font: 500 17px 'JetBrains Mono'; color: #5d6a63; }
+  #chat .bar i { width: 14px; height: 14px; border-radius: 50%; background: #262c29; display: block; }
+  #chat .bar span { margin-left: 12px; }
+  #chat .bar b { margin-left: auto; font-weight: 500; color: #95a39b; }
+  #feed { position: absolute; left: 0; right: 0; top: 56px; padding: 28px 30px; }
+  .you { margin-left: auto; width: 80%; background: #18201c; border: 1px solid rgba(255,255,255,.08); border-radius: 18px 18px 6px 18px; padding: 20px 24px; font: 500 28px/1.45 Inter; margin-bottom: 22px; }
+  .tool { border: 1px solid rgba(63,224,142,.28); background: rgba(63,224,142,.05); border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+  .tool .h { display: flex; align-items: center; gap: 12px; padding: 14px 20px; font: 700 23px 'JetBrains Mono'; color: #3fe08e; }
+  .tool .h small { font-weight: 500; color: #5d6a63; font-size: 16px; }
+  .tool .h .ok { margin-left: auto; color: #95a39b; font-weight: 500; font-size: 15px; }
+  .tool pre { margin: 0; padding: 12px 18px 16px; border-top: 1px solid rgba(63,224,142,.14); font: 400 19px/1.55 'JetBrains Mono'; color: #b7c8bf; white-space: pre-wrap; overflow: hidden; }
+  .spin { width: 16px; height: 16px; border: 3px solid rgba(63,224,142,.25); border-top-color: #3fe08e; border-radius: 50%; }
+  .verdict { margin-top: 8px; padding: 24px 28px; border-left: 5px solid #3fe08e; background: rgba(63,224,142,.07); border-radius: 0 18px 18px 0; font: 500 32px/1.5 Inter; }
+  .mark { background: rgba(63,224,142,.22); box-shadow: 0 0 0 4px rgba(63,224,142,.22); border-radius: 4px; }
+  /* tools wall */
+  .chip { position: absolute; padding: 18px 26px; border-radius: 16px; border: 1px solid rgba(63,224,142,.3); background: linear-gradient(180deg, #0f1612, #0a0e0c); font: 700 30px 'JetBrains Mono'; color: #3fe08e; white-space: nowrap; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  .chip small { display: block; margin-top: 6px; font: 500 19px Inter; color: #95a39b; }
+  /* terminal */
+  #term { position: absolute; left: 50%; top: 50%; width: 1360px; margin-left: -680px; margin-top: -120px; border-radius: 20px; background: #070a08; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 60px 160px rgba(0,0,0,.7); overflow: hidden; }
+  #term .bar { height: 50px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; padding: 0 20px; }
+  #term .bar i { width: 13px; height: 13px; border-radius: 50%; background: #262c29; display: block; }
+  #term pre { margin: 0; padding: 34px 36px 40px; font: 500 34px/1.6 'JetBrains Mono'; color: #dfe8e3; white-space: pre-wrap; }
+  /* end */
+  #end { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #030504; }
+  #end img { width: 380px; height: 380px; border-radius: 80px; }
+  #end .t { margin-top: 26px; font: 800 96px 'JetBrains Mono'; letter-spacing: .04em; }
+  #end .u { margin-top: 8px; font: 500 30px 'JetBrains Mono'; color: #95a39b; }
+  #end .d { margin-top: 40px; font: 400 17px Inter; color: rgba(255,255,255,.4); }
+  #logo { position: absolute; left: 50%; top: 50%; width: 400px; height: 400px; margin: -440px 0 0 -200px; border-radius: 86px; }
+</style>
+</head>
+<body>
+<div class="layer" id="bg"></div>
+<div id="stage" class="layer"></div>
+<div id="persp"><div id="chat"><div class="bar"><i></i><i></i><i></i><span>claude · pump</span><b>real session · Oct 27 2026</b></div><div id="feed"></div></div></div>
+<img id="logo" src="../site/brand/pumpmcp_coin.png">
+<div id="term"><div class="bar"><i></i><i></i><i></i></div><pre id="termT"></pre></div>
+<div class="layer" id="end"><img src="../site/brand/pumpmcp_coin.png"><div class="t">$PUMPMCP</div><div class="u" id="endU"></div><div class="d">Open source, MIT. Independent project. Not affiliated with pump.fun, PumpPortal or Anthropic. Not financial advice.</div></div>
+<script>window.READY = false</script>
+<script type="module">
+const Q = new URLSearchParams(location.search)
+const SITE = Q.get('site') || 'github.com/dodo1653/pump-mcp'
+const $ = (id) => document.getElementById(id)
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const E3 = (x) => 1 - Math.pow(1 - clamp(x), 3), E5 = (x) => 1 - Math.pow(1 - clamp(x), 5)
+const IO = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2 }
+const back = (x) => { x = clamp(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2) }
+const ramp = (t, a, b, f = .25) => clamp((t - a) / f) * clamp((b - t) / f)
+const lerp = (a, b, k) => a + (b - a) * k
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
+$('endU').textContent = SITE
+const D = await (await fetch('../site/demo.json')).json()
+const steps = D.steps.filter((s) => s.tool)
+const res = (n) => (steps.find((s) => s.tool === n)?.result || '')
+
+// word-by-word lines; each one gets its own element, position and entrance
+function kin(id, html, t0, t1, t, css, o = {}) {
+  let el = $(id); if (!el) { el = document.createElement('div'); el.id = id; el.className = 'kin'; $('stage').appendChild(el) }
+  if (t < t0 - .05 || t > t1 + .3) { el.innerHTML = ''; return }
+  el.style.cssText = css
+  const out = clamp((t1 + .3 - t) / .3), ws = html.split(' ')
+  el.innerHTML = ws.map((w, i) => {
+    const k = (o.pop ? back : E5)((t - t0 - i * (o.gap ?? .07)) / (o.dur ?? .36)), kk = clamp(k)
+    const tf = o.fx === 'left' ? `translateX(${(1 - k) * 70}px)` : o.fx === 'scale' ? `scale(${1.5 - .5 * k})` : o.fx === 'drop' ? `translateY(${-(1 - k) * 50}px)` : `translateY(${(1 - k) * 44}px)`
+    const cls = /^\*.*\*$/.test(w) ? 'g' : /^!.*!$/.test(w) ? 'hl' : '', word = cls ? w.slice(1, -1) : w
+    return `<span class="${cls}" style="opacity:${(kk * out).toFixed(3)};filter:blur(${((1 - kk) * 14).toFixed(1)}px);transform:${tf}">${esc(word)}</span>`
+  }).join(' ')
+}
+
+// the session, compressed into 11 s
+const PROMPT = 'Show me the 3 hottest pump.fun launches right now. Pick the best one whose dev hasn\'t sold, pull its details and check the dev\'s history.'
+const trim = (s, n) => s.split('\n').slice(0, n).join('\n')
+const VERDICT = 'JEFF\'s "hot" flow is mostly fake. <span class="mark">Of the 3.07 SOL in, 2.46 is the dev\'s own buy</span>, so real demand is about 0.6 SOL. The dev\'s last launch died at 0.1% of the curve. <span class="mark">Pure lottery ticket. Skip it.</span>'
+function chatAt(t) {
+  const T = t - 5.6, parts = []
+  const n = Math.floor(clamp(T / 1.3) * PROMPT.length)
+  parts.push(`<div class="you" style="opacity:${clamp(T / .2)}">${esc(PROMPT.slice(0, n))}${n < PROMPT.length ? '<span class="caret"></span>' : ''}</div>`)
+  const tool = (name, args, at, body, lines) => {
+    if (T < at) return
+    const done = T > at + .55, k = back((T - at) / .35)
+    parts.push(`<div class="tool" style="opacity:${clamp(k)};transform:translateY(${(1 - clamp(k)) * 20}px)"><div class="h">${done ? '<span>✓</span>' : `<span class="spin" style="transform:rotate(${T * 720}deg)"></span>`}${name} <small>${esc(args)}</small><span class="ok">${done ? 'done' : 'running'}</span></div>${done ? `<pre style="max-height:${Math.round(E3((T - at - .55) / .5) * lines * 30 + 32)}px">${esc(body)}</pre>` : ''}</div>`)
+  }
+  tool('pump_new_launches', '{"sort":"hot","limit":3}', 1.55, trim(res('pump_new_launches'), 7), 7)
+  tool('pump_coin', '{"mint":"2A476V…dQpump"}', 3.6, trim(res('pump_coin'), 5).replace(/https:\/\/www\.instagram\.com\S+/, 'instagram.com/…'), 5)
+  tool('pump_dev_history', '{"mint":"2A476V…dQpump"}', 5.0, res('pump_dev_history'), 3)
+  if (T > 6.5) parts.push(`<div class="verdict" style="opacity:${E3((T - 6.5) / .4)};transform:translateY(${(1 - E3((T - 6.5) / .4)) * 24}px)">${VERDICT}</div>`)
+  $('feed').innerHTML = parts.join('')
+  // keep the newest content in view
+  const over = Math.max(0, $('feed').scrollHeight - (960 - 56 - 30))
+  $('feed').style.transform = `translateY(${-over}px)`
+}
+
+window.DURATION = 34
+window.renderFrame = (t) => {
+  // 0-2.6: the question, typed on black
+  const q = 'What if your AI could trade the trenches?', n = Math.floor(clamp((t - .15) / 1.3) * q.length)
+  let kq = $('kQ'); if (!kq) { kq = document.createElement('div'); kq.id = 'kQ'; kq.className = 'kin'; kq.style.cssText = 'left:0;right:0;top:470px;text-align:center;font:800 84px Inter;letter-spacing:-.035em'; $('stage').appendChild(kq) }
+  kq.innerHTML = t < 2.6 ? esc(q.slice(0, n)).replace('trenches?', '<span class="g">trenches?</span>') + '<span class="caret"></span>' : ''
+  $('bg').style.opacity = clamp((t - 2.4) / .4)
+  // 2.6-5.4: the logo pops, the name and the line
+  const lk = back((t - 2.65) / .55), lo = E3((t - 5.2) / .3)
+  $('logo').style.opacity = t > 2.6 ? clamp(lk) * (1 - lo) : 0
+  $('logo').style.transform = `scale(${Math.max(0, lk) * (1 - lo * .4)}) rotate(${(1 - clamp(lk)) * -30}deg)`
+  kin('kName', 'PUMPMCP', 3.0, 5.0, t, 'left:0;right:0;top:640px;text-align:center;font:800 110px JetBrains Mono;letter-spacing:.04em', { fx: 'scale', pop: true })
+  kin('kLine', 'pump.fun, inside *your* *AI.*', 3.55, 5.0, t, 'left:0;right:0;top:790px;text-align:center;font:600 46px Inter;color:#95a39b', { gap: .09 })
+  // 5.4-17: the real session in a tilting window
+  const cin = E5((t - 5.35) / .6), cout = E3((t - 16.9) / .4), on = t > 5.3 && t < 17.4
+  $('persp').style.display = on ? 'block' : 'none'
+  if (on) {
+    chatAt(t)
+    const ry = lerp(-9, 6, IO((t - 5.4) / 11.5)), rx = lerp(7, 2, IO((t - 5.4) / 11.5))
+    const zoom = 1 + .22 * IO((t - 12.2) / 1.2) - .22 * IO((t - 15.4) / 1)
+    $('chat').style.transformOrigin = '50% 82%'
+    $('chat').style.transform = `translateY(${(1 - cin) * 300 - cout * 200}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${(.88 + .12 * cin) * zoom * .98})`
+    $('chat').style.opacity = cin * (1 - cout)
+  }
+  // captions beside the window
+  kin('kC1', 'It watches every launch.', 7.2, 8.9, t, 'left:70px;top:70px;font:800 58px Inter;letter-spacing:-.025em;text-shadow:0 4px 30px #000,0 0 60px #000', { fx: 'left' })
+  kin('kC2', 'Checks the dev.', 9.3, 11.2, t, 'right:70px;bottom:70px;font:800 58px Inter;letter-spacing:-.025em;text-shadow:0 4px 30px #000,0 0 60px #000', { fx: 'drop' })
+  kin('kC3', 'Catches the !fake! !pump.!', 12.4, 15.6, t, 'left:0;right:0;top:36px;text-align:center;font:800 60px Inter;letter-spacing:-.03em;text-shadow:0 4px 30px #000', { fx: 'scale', pop: true })
+  // 17.3-21.8: ten tools
+  const TOOLS = [['pump_new_launches', 'every launch, live'], ['pump_coin', 'any CA, everything'], ['pump_dev_history', 'how their last coins ended'], ['pump_wallet', 'your bag, valued'], ['pump_search', 'find the real one'], ['pump_buy', 'buy, simulated first'], ['pump_sell', 'sell any %'], ['pump_launch', 'launch a coin'], ['pump_claim_creator_fees', 'claim your fees'], ['pump_status', 'feed + wallet']]
+  const POS = [[330, 300], [960, 250], [1590, 300], [250, 540], [760, 520], [1210, 540], [1680, 560], [380, 790], [960, 800], [1560, 790]]
+  let chips = ''
+  if (t > 17.2 && t < 22.2) TOOLS.forEach(([n, d], i) => {
+    const k = back((t - 17.45 - i * .1) / .4), o = E3((t - 21.6 - i * .02) / .35)
+    chips += `<div class="chip" style="left:${POS[i][0]}px;top:${POS[i][1]}px;opacity:${clamp(k) * (1 - o)};transform:translate(-50%,-50%) scale(${.6 + .4 * k}) translateY(${o * -40}px)">${n}<small>${d}</small></div>`
+  })
+  let wall = $('wall'); if (!wall) { wall = document.createElement('div'); wall.id = 'wall'; wall.className = 'layer'; $('stage').appendChild(wall) }
+  wall.innerHTML = chips
+  kin('kTools', 'Ten tools. One sentence away.', 17.4, 21.6, t, 'left:0;right:0;top:110px;text-align:center;font:800 40px Inter;color:#95a39b;letter-spacing:-.01em', { gap: .06 })
+  // 22-25.3: three beats on trust
+  kin('kT1', 'Reads Solana directly.', 22.2, 23.25, t, 'left:150px;top:380px;font:800 92px Inter;letter-spacing:-.045em', { fx: 'left' })
+  kin('kT2', 'Signs on *your* *machine.*', 23.3, 24.3, t, 'right:150px;top:480px;font:800 92px Inter;letter-spacing:-.045em;text-align:right', { fx: 'drop' })
+  kin('kT3', 'Simulates before it sends.', 24.35, 25.3, t, 'left:0;right:0;top:450px;text-align:center;font:800 92px Inter;letter-spacing:-.045em', { fx: 'scale', pop: true })
+  // 25.4-29.6: one line to install
+  const ti = E5((t - 25.4) / .5), to = E3((t - 29.4) / .3)
+  $('term').style.opacity = t > 25.3 && t < 29.8 ? ti * (1 - to) : 0
+  $('term').style.transform = `translateY(${(1 - ti) * 80}px) scale(${.94 + .06 * ti})`
+  const cmd = 'claude mcp add pump -- npx -y github:dodo1653/pump-mcp', cn = Math.floor(clamp((t - 25.8) / 1.6) * cmd.length)
+  $('termT').innerHTML = `<span class="g">$ </span>${esc(cmd.slice(0, cn))}${cn < cmd.length || Math.floor(t * 2.4) % 2 ? '<span class="caret"></span>' : ''}` + (t > 27.7 ? `\n<span style="color:#5d6a63;opacity:${E3((t - 27.7) / .3)}">Added stdio MCP server pump</span>` : '')
+  kin('kOpen', 'Open source. One line.', 25.6, 29.2, t, 'left:0;right:0;top:250px;text-align:center;font:800 56px Inter;letter-spacing:-.03em', { gap: .08 })
+  // 29.6-34: end card
+  $('end').style.opacity = E3((t - 29.6) / .5)
+  const ek = back((t - 29.75) / .6); $('end').querySelector('img').style.transform = `scale(${.6 + .4 * Math.max(0, ek)})`
+}
+await document.fonts.ready
+await new Promise((r) => { const im = $('logo'); im.complete ? r() : (im.onload = r) })
+window.renderFrame(0); window.READY = true
+</script>
+</body>
+</html>
