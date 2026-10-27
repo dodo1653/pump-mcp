@@ -1,0 +1,70 @@
+{
+ "recorded": "2026-10-27",
+ "client": "Claude Code",
+ "turns": [
+  [
+   {
+    "type": "user",
+    "text": "What's moving on pump.fun right now? Top 3 by real inflow, keep it short."
+   },
+   {
+    "type": "tool",
+    "name": "pump_new_launches",
+    "args": {
+     "sort": "hot",
+     "limit": 10
+    },
+    "result": "10 launches (watching for 25s, SOL $99.84):\n\n$波波 (小熊波波) GN67LfHvC1L3jWmoxGe4kuGeoUKXzemv6Ra5xtaBpump\n  14s old · MC $3.5K · curve 15% · 20 buys / 21 sells · 19 buyers · 5m net +5.16 SOL (dev excluded)\n  dev AufH…JC6u holds 0.0% (DEV SOLD 4.398 SOL) · 4 wallets bought in the launch block (13%)\n\n$BAH (buy and hold) EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump\n  23s old · MC $6.1K · curve 44% · 30 buys / 7 sells · 27 buyers · 5m net +4.43 SOL (dev excluded)\n  dev 4M47…yTgX holds 27% · 2 wallets bought in the launch block (9.9%)\n\n$CORM (corm) 27EmjXCMbZu36EyMWtPBQvvfWxAMGyped6JzCKsgpump\n  10s old · MC $10.5K · curve 1.4% · 21 buys / 12 sells · 9 buyers · 5m net +0.38 SOL (dev excluded)\n  dev CccB…GRhs holds 0.0% (DEV SOLD 0.7228 SOL)\n\n$GALAXYAI (Galaxy) 2kUqWS94x3Fz8wBYTgt5U97munftZaHVAx5eY9WLpump\n  25s old · MC $3.1K · curve 6.2% · 4 buys / 1 sells · 4 buyers · 5m net +0.20 SOL (dev excluded)\n  dev D6Bw…TQ53 holds 4.2%\n\n$RICK (Gucci Rick) B4T7j5z2TC5rpu3iV5wzNYUrgeT5rCwii6zF2Rm5pump\n  15s old · MC $5.0K · curve 0.5% · 6 buys / 3 sells · 2 buyers · 5m net +0.05 SOL (dev excluded)\n  dev GdTf…95Ws holds 0.2%\n\n$$GM (Gold  monkey) B5B4B7DrFzgSKmyNdcHn9BX7GuYsq6fLebALzXQ5pump\n  20s old · MC $1.5K · curve 0.6% · 9 buys / 9 sells · 3 buyers · 5m net +0.04 SOL (dev excluded)\n  dev HzQs…cfRg holds 0.2%\n\n$DOOB (DOOBIE) AHpF6Lod8tcCQrtHbE8itm7qvJhUyRDVR17fTFDmpump\n  10s old · MC $3.8K · curve 0.2% · 4 buys / 2 sells · 2 buyers · 5m net +0.03 SOL (dev excluded)\n  dev 6jfF…NY4S holds 0.0% (DEV SOLD 0.1159 SOL)\n\n$$CCOW (cat cow) HeG1t6EZPzaWjxYfZGnRWvyth8udNDmEQajQwiDgpump\n  11s old · MC $3.0K · curve 1.3% · 6 buys / 5 sells · 2 buyers · 5m net +0.01 SOL (dev excluded)\n  dev 9tae…LXJN holds 0.9%\n\n$fiat (fiat) 4Az3GsMF3jKvb6i6hx3pN8FR9b2FZfZ9AmJwLj1vpump\n  18s old · MC $0.00 · curve 13% · 36 buys / 17 sells · 25 buyers · 5m net +0.00 SOL (dev excluded)\n  dev EyK3…Sy4j holds 0.0% · 4 wallets bought in the launch block (16%)\n\n$fiat (fiat) 3GXzso8FqPN1bjJAQrjfUHevjWViYQ9iucCcUuUeHoz5\n  16s old · MC $73.8K · curve 0.0% · 0 buys / 0 sells · 0 buyers · 5m net +0.00 SOL (dev excluded)\n  dev 8BKY…dAbC holds 0.0%"
+   },
+   {
+    "type": "ai",
+    "text": "Big caveat first: the feed has only been watching for **25 seconds**, so these are just coins that launched in the last half-minute. That's too little data to call any trend.\n\nTop 3 by net SOL from buyers (dev excluded):\n\n1. **$波波 (小熊波波)**: +5.16 SOL, MC $3.5K, 19 buyers. 🚩 The dev already sold all of theirs (4.4 SOL), which cancels out most of that inflow. Buys and sells are even (20/21), and 4 wallets bought 13% of supply in the launch block.\n   `GN67LfHvC1L3jWmoxGe4kuGeoUKXzemv6Ra5xtaBpump`\n2. **$BAH (buy and hold)**: +4.43 SOL, MC $6.1K, 44% of the way to graduating. This one looks the healthiest: 30 buys to 7 sells and 27 buyers. ⚠️ The dev still holds 27%, so a dev sale could crash it.\n   `EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump`\n3. **$CORM (corm)**: +0.38 SOL, with 9 buyers. The inflow is very small, and the dev already sold.\n   `27EmjXCMbZu36EyMWtPBQvvfWxAMGyped6JzCKsgpump`\n\nAfter the top two the inflow almost disappears. If you want a real read, ask again in about 5 minutes, once the feed has a full window of data."
+   }
+  ],
+  [
+   {
+    "type": "user",
+    "text": "Check BAH: details and the dev's launch history. Two-line verdict."
+   },
+   {
+    "type": "tool",
+    "name": "pump_coin",
+    "args": {
+     "mint": "EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump"
+    },
+    "result": "$BAH · buy and hold · EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump\nAbout: Deployed using https://j7tracker.io\nLinks: X https://twitter.com/MustStopMurad/status/2115041470981783697\nOn the bonding curve: price 5.896e-8 SOL · MC $5.9K (58.960 SOL) · curve 42% · 13.565 SOL in the curve\nDev 4M47u8mQT27FxgeMVsCct7b3KQJX4rxXUrN2V4W6yTgX\npump.fun: https://pump.fun/coin/EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump"
+   },
+   {
+    "type": "tool",
+    "name": "pump_dev_history",
+    "args": {
+     "mint": "EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump"
+    },
+    "result": "4M47u8mQT27FxgeMVsCct7b3KQJX4rxXUrN2V4W6yTgX launched 2 coin(s) in its last 149 transactions, 0 graduated:\n$BAH EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump · 2m ago · on the curve 52% · MC $7.3K\n$1 GRN6ZNSeDUCqyGvDPEWdzqUjDcT7NfWVtFUwxPMppump · 20.7h ago · on the curve 0.0% · MC $2.8K (dead)"
+   },
+   {
+    "type": "ai",
+    "text": "**$BAH**: about 2 minutes old, MC $6–7K and climbing, 42–52% along the bonding curve (it moved between my two checks). It was launched with the j7tracker deploy tool. Its only \"social\" is a link to someone else's tweet (@MustStopMurad), not its own account. The dev has launched one other coin in their recent history, **$1**, 21 hours ago, and it died at 0% of the curve. Neither of their coins has graduated.\n\n**Verdict:** A low-effort coin riding someone else's tweet, from a dev whose only other launch flopped. With 27% of the supply still in the dev's wallet, this is a momentum trade at best, and it could be dumped on buyers at any moment. 🚩"
+   }
+  ],
+  [
+   {
+    "type": "user",
+    "text": "Buy 0.05 SOL of it."
+   },
+   {
+    "type": "tool",
+    "name": "pump_buy",
+    "args": {
+     "mint": "EysuFF7rzzq3g7Tdx6Wu4SstpnX3JjsN7kAkE5GMpump",
+     "sol": 0.05
+    },
+    "result": "No wallet is set. Add PUMP_WALLET_KEY (base58) or PUMP_WALLET_FILE (a Solana CLI keypair file) to this MCP server's env."
+   },
+   {
+    "type": "ai",
+    "text": "The buy didn't go through. No wallet is set up on the pump server, so nothing was sent and no SOL was spent.\n\nTo enable trading, add one of these to the pump MCP server's environment settings, then restart it:\n- `PUMP_WALLET_KEY`: your wallet's private key in base58\n- `PUMP_WALLET_FILE`: the path to a Solana CLI keypair file\n\nThe keypair file is the safer choice, ideally a burner wallet with only a small amount of SOL in it. Also, BAH was moving quickly, so its price will have changed by the time the wallet is ready. Once it's set up, tell me whether you still want the buy and I'll check the coin again before placing it."
+   }
+  ]
+ ]
+}

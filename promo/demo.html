@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PUMPMCP demo cut</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0b0c0c; font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; color: #e8ecea; }
+  #bg { position: absolute; inset: 0; background: radial-gradient(1400px 900px at 50% 40%, #141716 0%, #0b0c0c 60%, #070808 100%); }
+  /* the camera moves this whole group */
+  #cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  #head { position: absolute; left: 84px; right: 84px; top: 48px; display: flex; align-items: center; font: 500 21px Inter; color: #7f8a85; }
+  #head img { width: 26px; height: 26px; border-radius: 7px; margin-right: 12px; }
+  #head b { color: #e8ecea; font-weight: 600; letter-spacing: .04em; margin-right: 14px; font-family: 'JetBrains Mono'; }
+  #chap { margin-left: auto; color: #cfd6d2; }
+  #chap span { font-family: 'JetBrains Mono'; color: #3fe08e; margin-right: 12px; }
+  #win { position: absolute; left: 80px; right: 80px; top: 104px; bottom: 44px; border-radius: 16px; background: #101211; border: 1px solid rgba(255,255,255,.09); box-shadow: 0 40px 120px rgba(0,0,0,.55); overflow: hidden; }
+  #win .bar { height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 18px; border-bottom: 1px solid rgba(255,255,255,.06); font: 500 15px 'JetBrains Mono'; color: #6b7570; }
+  #win .bar i { width: 12px; height: 12px; border-radius: 50%; background: #2a2e2c; display: block; }
+  #win .bar span { margin: 0 auto; transform: translateX(-30px); }
+  #view { position: absolute; left: 0; right: 0; top: 47px; bottom: 0; overflow: hidden; }
+  #log { position: absolute; left: 0; right: 0; top: 0; padding: 26px 40px 40px; font: 400 24px/1.6 'JetBrains Mono'; }
+  .blk { margin-bottom: 22px; }
+  .user { background: #1a1d1c; border-radius: 8px; padding: 10px 16px; color: #f1f4f2; }
+  .user .p { color: #6b7570; margin-right: 12px; }
+  .call { color: #e8ecea; }
+  .dot { display: inline-block; width: 22px; color: #3fe08e; }
+  .dot.w { color: #e8ecea; }
+  .call .n { font-weight: 700; }
+  .call .a { color: #8b958f; }
+  .res { color: #8b958f; white-space: pre-wrap; padding-left: 22px; }
+  .res .el { color: #5f6a65; margin-right: 12px; }
+  .more { color: #5f6a65; padding-left: 56px; }
+  .ai { white-space: pre-wrap; padding-left: 22px; text-indent: -22px; }
+  .ai b { color: #fff; }
+  .ai code { color: #8fe3b8; }
+  .think { color: #c8a26a; }
+  .caret { display: inline-block; width: 11px; height: 22px; background: #e8ecea; vertical-align: -4px; }
+  .hl { background: rgba(63,224,142,.16); box-shadow: 0 0 0 3px rgba(63,224,142,.16); border-radius: 3px; }
+  /* title + end cards */
+  .card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0b0c0c; }
+  .card img { width: 120px; height: 120px; border-radius: 28px; }
+  .card .t { margin-top: 26px; font: 700 54px 'JetBrains Mono'; letter-spacing: .05em; }
+  .card .s { margin-top: 12px; font: 500 24px Inter; color: #8b958f; }
+  .card .c { margin-top: 34px; padding: 16px 26px; border-radius: 12px; background: #131615; border: 1px solid rgba(255,255,255,.09); font: 500 24px 'JetBrains Mono'; color: #e8ecea; }
+  .card .c span { color: #3fe08e; }
+  .card .d { margin-top: 30px; font: 400 15px Inter; color: #59625e; }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="cam">
+  <div id="head"><img src="../site/brand/pumpmcp_coin.png"><b>PUMPMCP</b>a real session in Claude Code, recorded Oct 27 2026<div id="chap"></div></div>
+  <div id="win"><div class="bar"><i></i><i></i><i></i><span>claude · ~/trenches</span></div><div id="view"><div id="log"></div></div></div>
+</div>
+<div class="card" id="intro"><img src="../site/brand/pumpmcp_coin.png"><div class="t">PUMPMCP</div><div class="s">pump.fun, inside your AI. A real session.</div></div>
+<div class="card" id="outro"><img src="../site/brand/pumpmcp_coin.png"><div class="t">PUMPMCP</div><div class="s">Open source. Read-only until you turn trading on.</div><div class="c"><span>$ </span>claude mcp add pump -- npx -y github:dodo1653/pump-mcp</div><div class="d">github.com/dodo1653/pump-mcp · Not affiliated with pump.fun or Anthropic. Not financial advice.</div></div>
+<script>window.READY = false</script>
+<script type="module">
+const $ = (id) => document.getElementById(id)
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const E3 = (x) => 1 - Math.pow(1 - clamp(x), 3)
+const IO = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2 }
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
+const S = await (await fetch('session2.json')).json()
+
+// light markdown, the way a terminal shows it: bold, code, nothing else
+const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>')
+// what to emphasise in each answer (exact phrases from the real output)
+const MARK = ['The dev already sold all of theirs (4.4 SOL)', 'The dev still holds 27%', 'died at 0% of the curve', 'nothing was sent and no SOL was spent']
+const mark = (h) => MARK.reduce((x, m) => x.replace(esc(m), `<span class="hl">${esc(m)}</span>`), h)
+const argStr = (a) => Object.entries(a).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(', ')
+const SHOW = 7                                             // result lines shown before "… +N lines", like Claude Code
+
+// ---------------------------------------------------------------- timeline: every block gets a start and a length
+const T0 = 3.2, CHAPS = ['What\'s moving right now', 'Check the dev', 'Try to buy']
+const blocks = []; let t = T0
+S.turns.forEach((turn, ti) => {
+  for (const b of turn) {
+    if (b.type === 'user') { const d = b.text.length / 30; blocks.push({ ...b, ti, a: t, d }); t += d + .45; blocks.push({ type: 'think', ti, a: t, d: 1.1 }); t += 1.1 }
+    else if (b.type === 'tool') { const lines = (b.result || '').split('\n'); blocks.push({ ...b, ti, a: t, d: 1.0, lines }); t += 1.0 + .7 }
+    else { const words = b.text.split(/(\s+)/); const d = Math.max(1.6, words.length / 2 / 34); blocks.push({ ...b, ti, a: t, d, words }); t += d + (ti === 2 ? 3.4 : 3.6) }
+  }
+})
+const T_END = t, DUR = T_END + 5.5
+window.DURATION = Math.ceil(DUR)
+
+function render(tt) {
+  let html = ''
+  for (const b of blocks) {
+    if (tt < b.a) break
+    const k = clamp((tt - b.a) / b.d)
+    if (b.type === 'user') {
+      const n = Math.floor(k * b.text.length)
+      html += `<div class="blk user"><span class="p">&gt;</span>${esc(b.text.slice(0, n))}${k < 1 ? '<span class="caret"></span>' : ''}</div>`
+    } else if (b.type === 'think') {
+      if (k < 1) html += `<div class="blk think">${'✶✸✹✺✹✸'[Math.floor(tt * 8) % 6]} Thinking…</div>`
+    } else if (b.type === 'tool') {
+      const running = tt < b.a + .75
+      html += `<div class="blk"><div class="call"><span class="dot" style="opacity:${running && Math.floor(tt * 3) % 2 ? .25 : 1}">●</span><span class="n">pump - ${esc(b.name)}</span> <span class="a">(MCP)(${esc(argStr(b.args))})</span></div>`
+      if (!running) {
+        const o = E3((tt - b.a - .75) / .3), shown = b.lines.slice(0, SHOW), more = b.lines.length - SHOW
+        html += `<div class="res" style="opacity:${o}"><span class="el">⎿</span>${esc(shown.join('\n')).replace(/\n/g, '\n   ')}</div>${more > 0 ? `<div class="more" style="opacity:${o}">… +${more} lines (ctrl+o to expand)</div>` : ''}`
+      }
+      html += '</div>'
+    } else if (b.type === 'ai') {
+      const n = Math.floor(k * b.words.length), txt = b.words.slice(0, n).join('')
+      html += `<div class="blk ai"><span class="dot w">●</span>${k >= 1 ? mark(md(b.text)) : md(txt)}</div>`
+    }
+  }
+  $('log').innerHTML = html
+}
+// the view follows the bottom of the conversation, eased so it glides instead of jumping
+const VIEW_H = () => $('view').clientHeight
+function targetScroll(tt) { render(tt); return Math.max(0, $('log').scrollHeight - VIEW_H() + 40) }
+window.renderFrame = (tt) => {
+  $('intro').style.opacity = 1 - E3((tt - 2.5) / .7)
+  $('outro').style.opacity = E3((tt - T_END - .3) / .8)
+  // eased scroll: the average of where the bottom was over the last 0.3 s
+  let sum = 0; const N = 6; for (let i = 0; i < N; i++) sum += targetScroll(Math.max(0, tt - i * .06))
+  render(tt)
+  $('log').style.transform = `translateY(${-sum / N}px)`
+  // chapter label
+  const cur = blocks.filter((b) => b.a <= tt).pop(); const ti = cur ? cur.ti : 0
+  $('chap').innerHTML = `<span>0${ti + 1}</span>${CHAPS[ti]}`
+  // the camera: a slow push in, a gentle lean toward each verdict, back out between turns
+  const v1 = blocks.find((b) => b.type === 'ai' && b.ti === 1), v2 = blocks.find((b) => b.type === 'ai' && b.ti === 2)
+  const lean = (b) => (b ? IO((tt - b.a - b.d + .4) / 1.2) * (1 - IO((tt - b.a - b.d - 2.8) / 1)) : 0)
+  const z = 1 + .025 * clamp((tt - 3) / 40) + .09 * Math.max(lean(v1), lean(v2))
+  $('cam').style.transformOrigin = '50% 78%'
+  $('cam').style.transform = `scale(${z.toFixed(4)})`
+}
+await document.fonts.ready
+window.renderFrame(0); window.READY = true
+</script>
+</body>
+</html>
