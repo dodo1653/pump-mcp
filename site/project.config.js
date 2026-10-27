@@ -4,5 +4,5 @@ export default {
   ticker: 'PUMPMCP',
   github: 'https://github.com/dodo1653/pump-mcp',
   x: '',
-  mint: '',
+  mint: 'DeZkwv5XYj6ne8jKYENd5Wjf5ZPS3xAwUUbvwrbXpump',
 }
