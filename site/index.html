@@ -244,14 +244,16 @@ if (P.mint) {
 
 // ---------------------------------------------------------------- install boxes
 const CMD = {
-  code: '<span class="p">$ </span>claude mcp add pump -- npx -y github:dodo1653/pump-mcp',
+  code: '<span class="p">$ </span>claude mcp add pump -- npx -y github:dodo1653/pump-mcp
+<span class="p"># windows: </span>claude mcp add pump -- cmd /c npx -y github:dodo1653/pump-mcp',
   desktop: esc('{\n  "mcpServers": {\n    "pump": {\n      "command": "npx",\n      "args": ["-y", "github:dodo1653/pump-mcp"]\n    }\n  }\n}'),
   cursor: esc('// .cursor/mcp.json\n{\n  "mcpServers": {\n    "pump": { "command": "npx", "args": ["-y", "github:dodo1653/pump-mcp"] }\n  }\n}'),
 }
 for (const box of document.querySelectorAll('[data-ins]')) {
   const cmd = box.querySelector('.cmd')
   const show = (k) => { cmd.innerHTML = CMD[k] + '<button class="copy">Copy</button>'; box.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.k === k))
-    cmd.querySelector('.copy').onclick = (e) => { navigator.clipboard?.writeText(cmd.textContent.replace(/^\$ /, '').replace(/Copy$/, '')); e.target.textContent = 'Copied'; setTimeout(() => (e.target.textContent = 'Copy'), 1400) } }
+    cmd.querySelector('.copy').onclick = (e) => { navigator.clipboard?.writeText(cmd.textContent.replace(/Copy$/, '').split('
+')[0].replace(/^\$ /, '')); e.target.textContent = 'Copied'; setTimeout(() => (e.target.textContent = 'Copy'), 1400) } }
   box.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => show(b.dataset.k)))
   show('code')
 }

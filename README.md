@@ -29,6 +29,8 @@ Needs Node 22 or newer.
 **Claude Code**
 ```bash
 claude mcp add pump -- npx -y github:dodo1653/pump-mcp
+# on Windows:
+claude mcp add pump -- cmd /c npx -y github:dodo1653/pump-mcp
 ```
 
 **Claude Desktop / Cursor**: add to `claude_desktop_config.json` or `.cursor/mcp.json`:
@@ -43,6 +45,8 @@ claude mcp add pump -- npx -y github:dodo1653/pump-mcp
   }
 }
 ```
+
+On Windows use `"command": "cmd", "args": ["/c", "npx", "-y", "github:dodo1653/pump-mcp"]`.
 
 That's read-only. To let the assistant trade, add a wallet and switch trading on (below).
 
