@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PUMPMCP · pump.fun inside your AI</title>
+<meta name="description" content="An open-source MCP server that lets Claude, Cursor or any AI agent watch launches, research devs and trade pump.fun from a chat. Your key never leaves your machine.">
+<meta property="og:title" content="PUMPMCP · pump.fun inside your AI">
+<meta property="og:description" content="Open-source MCP server: watch launches, research devs and trade pump.fun from a chat with Claude, Cursor or any AI agent.">
+<meta property="og:image" content="brand/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="brand/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #050706; --panel: #0b0f0d; --panel2: #0f1512; --line: rgba(255,255,255,.08); --line2: rgba(255,255,255,.14); --ink: #eef3f0; --dim: #95a39b; --faint: #5d6a63; --g: #3fe08e; --g2: #7dffb4; --red: #ff6b6b; --amber: #ffc857; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.55 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+  /* background: a faint grid and a green glow behind the hero */
+  .bgfx { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(900px 520px at 72% 8%, rgba(63,224,142,.13), transparent 70%), radial-gradient(700px 400px at 10% 0%, rgba(63,224,142,.06), transparent 70%),
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 48px 48px, linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 48px 48px;
+    mask-image: linear-gradient(#000 0, #000 55%, transparent 100%); }
+  /* header */
+  header { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(5,7,6,.72); border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; font: 800 17px 'JetBrains Mono'; letter-spacing: .06em; }
+  .logo img { width: 30px; height: 30px; border-radius: 8px; }
+  nav { display: flex; gap: 22px; font-size: 14px; color: var(--dim); }
+  nav a:hover { color: var(--ink); }
+  .hright { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 10px; font: 600 14px Inter; border: 1px solid var(--line2); background: rgba(255,255,255,.03); transition: .15s; cursor: pointer; color: var(--ink); }
+  .btn:hover { background: rgba(255,255,255,.08); }
+  .btn.g { background: var(--g); color: #03140a; border-color: transparent; }
+  .btn.g:hover { background: var(--g2); }
+  .btn svg { width: 16px; height: 16px; }
+  #ca { display: none; align-items: center; gap: 10px; height: 38px; padding: 0 6px 0 12px; border-radius: 10px; border: 1px solid rgba(63,224,142,.35); background: rgba(63,224,142,.07); font: 500 13px 'JetBrains Mono'; }
+  #ca.on { display: inline-flex; }
+  #ca b { color: var(--g); font-weight: 700; }
+  #ca button { height: 28px; border: 0; border-radius: 7px; background: var(--g); color: #03140a; font: 700 12px Inter; padding: 0 10px; cursor: pointer; }
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1fr 1.08fr; gap: 56px; align-items: center; padding: 84px 0 70px; }
+  .kick { display: inline-flex; align-items: center; gap: 10px; font: 600 12px 'JetBrains Mono'; letter-spacing: .14em; color: var(--g); padding: 6px 12px; border: 1px solid rgba(63,224,142,.3); border-radius: 999px; background: rgba(63,224,142,.06); }
+  .kick i { width: 7px; height: 7px; border-radius: 50%; background: var(--g); box-shadow: 0 0 10px var(--g); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  h1 { margin: 22px 0 18px; font: 800 64px/1.02 Inter; letter-spacing: -.045em; }
+  h1 em { font-style: normal; color: var(--g); }
+  .lead { font-size: 19px; color: var(--dim); max-width: 520px; margin: 0 0 30px; }
+  .lead b { color: var(--ink); font-weight: 600; }
+  .install { border: 1px solid var(--line2); border-radius: 14px; background: var(--panel); overflow: hidden; max-width: 560px; }
+  .tabs { display: flex; border-bottom: 1px solid var(--line); }
+  .tabs button { flex: none; background: none; border: 0; color: var(--faint); font: 600 13px Inter; padding: 11px 16px; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tabs button.on { color: var(--ink); border-bottom-color: var(--g); }
+  .cmd { position: relative; padding: 16px 84px 16px 18px; font: 500 14px/1.6 'JetBrains Mono'; color: #cfe9da; white-space: pre; overflow-x: auto; }
+  .cmd .p { color: var(--g); user-select: none; }
+  .copy { position: absolute; top: 10px; right: 10px; height: 30px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line2); background: rgba(255,255,255,.05); color: var(--ink); font: 600 12px Inter; cursor: pointer; }
+  .heroBtns { display: flex; gap: 12px; margin-top: 22px; }
+  .note { margin-top: 14px; font-size: 13px; color: var(--faint); }
+  /* the chat replay */
+  .chat { border: 1px solid var(--line2); border-radius: 18px; background: linear-gradient(180deg, #0c110e, #070a08); box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(63,224,142,.04), 0 0 80px rgba(63,224,142,.06); overflow: hidden; }
+  .chat .bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); font: 500 12px 'JetBrains Mono'; color: var(--faint); }
+  .chat .bar i { width: 11px; height: 11px; border-radius: 50%; background: #2a302d; }
+  .chat .bar span { margin-left: 10px; }
+  .chat .bar .rec { margin-left: auto; color: var(--dim); }
+  #log { height: 560px; overflow-y: auto; padding: 20px 20px 26px; scroll-behavior: smooth; scrollbar-width: none; }
+  #log::-webkit-scrollbar { display: none; }
+  .msg { margin-bottom: 16px; animation: rise .45s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  .you { margin-left: auto; max-width: 86%; background: #18201c; border: 1px solid var(--line); border-radius: 14px 14px 4px 14px; padding: 12px 14px; font-size: 14px; }
+  .tool { border: 1px solid rgba(63,224,142,.22); background: rgba(63,224,142,.04); border-radius: 12px; overflow: hidden; }
+  .tool .h { display: flex; align-items: center; gap: 10px; padding: 9px 12px; font: 600 12.5px 'JetBrains Mono'; color: var(--g); }
+  .tool .h small { color: var(--faint); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tool .h .st { margin-left: auto; color: var(--dim); font-weight: 500; }
+  .spin { width: 12px; height: 12px; border: 2px solid rgba(63,224,142,.25); border-top-color: var(--g); border-radius: 50%; animation: sp .7s linear infinite; flex: none; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  .tool pre { margin: 0; padding: 10px 12px 12px; border-top: 1px solid rgba(63,224,142,.12); font: 400 11.5px/1.55 'JetBrains Mono'; color: #b7c8bf; white-space: pre-wrap; word-break: break-all; max-height: 240px; overflow: hidden; }
+  .ai { font-size: 14px; color: #dfe8e3; }
+  .ai table { border-collapse: collapse; margin: 8px 0; font-size: 12.5px; width: 100%; }
+  .ai td, .ai th { border-bottom: 1px solid var(--line); padding: 5px 8px 5px 0; text-align: left; }
+  .ai th { color: var(--faint); font-weight: 600; }
+  .ai code { font: 500 12px 'JetBrains Mono'; color: var(--g2); background: rgba(63,224,142,.08); padding: 1px 5px; border-radius: 4px; }
+  .ai blockquote { margin: 10px 0; padding: 10px 14px; border-left: 3px solid var(--g); background: rgba(63,224,142,.05); border-radius: 0 10px 10px 0; color: var(--ink); }
+  .ai p { margin: 8px 0; }
+  .ai ul { margin: 6px 0; padding-left: 18px; }
+  .caret { display: inline-block; width: 8px; height: 15px; background: var(--g); vertical-align: -2px; animation: pulse .9s infinite; }
+  /* sections */
+  section { padding: 90px 0; border-top: 1px solid var(--line); }
+  .sk { font: 600 12px 'JetBrains Mono'; letter-spacing: .18em; color: var(--g); }
+  h2 { margin: 12px 0 14px; font: 800 44px/1.08 Inter; letter-spacing: -.035em; }
+  .sub { color: var(--dim); font-size: 17px; max-width: 640px; margin: 0 0 40px; }
+  /* live */
+  .live { border: 1px solid var(--line2); border-radius: 16px; background: var(--panel); overflow: hidden; }
+  .live .top { display: flex; align-items: center; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--line); font: 500 13px 'JetBrains Mono'; color: var(--dim); }
+  .live .top b { color: var(--ink); }
+  .live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+  .live .dot.on { background: var(--g); box-shadow: 0 0 10px var(--g); animation: pulse 1.6s infinite; }
+  .live .top .r { margin-left: auto; }
+  .lrow { display: grid; grid-template-columns: 1.6fr .7fr .9fr .8fr 1.1fr 1.2fr; gap: 12px; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--line); font: 500 13px 'JetBrains Mono'; }
+  .lrow.h { color: var(--faint); font-size: 11px; letter-spacing: .1em; padding-top: 10px; padding-bottom: 10px; }
+  .lrow .n { font: 600 14px Inter; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lrow .n small { display: block; font: 400 11px 'JetBrains Mono'; color: var(--faint); }
+  .lrow.new { animation: flash 1.2s ease; }
+  @keyframes flash { from { background: rgba(63,224,142,.12); } }
+  .bar2 { height: 6px; border-radius: 3px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .bar2 i { display: block; height: 100%; background: var(--g); }
+  .tag { display: inline-block; padding: 2px 7px; border-radius: 5px; font: 700 10.5px 'JetBrains Mono'; letter-spacing: .04em; }
+  .tag.r { background: rgba(255,107,107,.14); color: var(--red); }
+  .tag.a { background: rgba(255,200,87,.13); color: var(--amber); }
+  .tag.ok { background: rgba(63,224,142,.1); color: var(--g); }
+  .up { color: var(--g); } .dn { color: var(--red); }
+  /* tools */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .card { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--panel2), var(--panel)); padding: 20px; transition: .2s; }
+  .card:hover { border-color: rgba(63,224,142,.35); transform: translateY(-2px); }
+  .card .t { font: 700 14px 'JetBrains Mono'; color: var(--g); }
+  .card .t span { float: right; font: 600 10px Inter; letter-spacing: .12em; color: var(--faint); border: 1px solid var(--line2); padding: 2px 6px; border-radius: 5px; }
+  .card .t span.w { color: var(--amber); border-color: rgba(255,200,87,.3); }
+  .card p { margin: 10px 0 0; color: var(--dim); font-size: 14.5px; }
+  .card .ex { margin-top: 12px; font: 500 12px 'JetBrains Mono'; color: #b9cdc2; background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; counter-reset: s; }
+  .step { padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+  .step b { display: block; font: 700 18px Inter; margin: 14px 0 8px; }
+  .step p { margin: 0; color: var(--dim); font-size: 14.5px; }
+  .step .n { font: 800 13px 'JetBrains Mono'; color: #03140a; background: var(--g); border-radius: 7px; padding: 3px 8px; }
+  .safe { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 40px; margin-top: 34px; }
+  .safe div { display: flex; gap: 12px; color: var(--dim); font-size: 15px; }
+  .safe div::before { content: ''; flex: none; width: 18px; height: 18px; margin-top: 2px; border-radius: 50%; background: rgba(63,224,142,.15) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12l4 4 8-8' fill='none' stroke='%233fe08e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 12px no-repeat; }
+  .safe b { color: var(--ink); font-weight: 600; }
+  /* cta + footer */
+  .cta { text-align: center; padding: 100px 0; }
+  .cta img { width: 96px; height: 96px; border-radius: 22px; margin-bottom: 20px; box-shadow: 0 0 60px rgba(63,224,142,.25); }
+  .cta .install { margin: 26px auto 0; text-align: left; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--faint); font-size: 13px; }
+  footer .wrap { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  footer .r { margin-left: auto; display: flex; gap: 18px; }
+  footer a:hover { color: var(--ink); }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; padding-top: 50px; } h1 { font-size: 46px; } nav { display: none; }
+    .grid, .steps { grid-template-columns: 1fr; } .safe { grid-template-columns: 1fr; }
+    .lrow { grid-template-columns: 1.6fr .8fr 1fr; } .lrow > :nth-child(n+4) { display: none; }
+    #log { height: 480px; } h2 { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+<div class="bgfx"></div>
+<header><div class="wrap">
+  <a class="logo" href="#"><img src="brand/pumpmcp_coin.png" alt="">PUMPMCP</a>
+  <nav><a href="#live">Live</a><a href="#tools">Tools</a><a href="#how">How it works</a><a href="#install">Install</a></nav>
+  <div class="hright">
+    <div id="ca"><b id="caT"></b><span id="caV"></span><button id="caCopy">Copy CA</button></div>
+    <a class="btn" id="xBtn" style="display:none" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    <a class="btn" id="ghBtn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>GitHub</a>
+  </div>
+</div></header>
+
+<main>
+<div class="wrap hero">
+  <div>
+    <div class="kick reveal"><i></i>OPEN-SOURCE MCP SERVER</div>
+    <h1 class="reveal">pump.fun,<br>inside <em>your AI.</em></h1>
+    <p class="lead reveal">Let Claude, Cursor or any AI agent <b>watch every launch, research the dev and trade pump.fun</b> from a chat. Read straight from Solana. Your key never leaves your machine.</p>
+    <div class="install reveal" data-ins>
+      <div class="tabs"><button class="on" data-k="code">Claude Code</button><button data-k="desktop">Claude Desktop</button><button data-k="cursor">Cursor</button></div>
+      <div class="cmd"></div>
+    </div>
+    <div class="heroBtns reveal"><a class="btn g" href="#live">See it live</a><a class="btn" id="ghBtn2" target="_blank" rel="noopener">Read the code</a></div>
+    <div class="note reveal">Read-only by default. Trading is opt-in, capped and simulated before anything is sent.</div>
+  </div>
+  <div class="chat reveal">
+    <div class="bar"><i></i><i></i><i></i><span>claude · pump</span><span class="rec" id="rec"></span></div>
+    <div id="log"></div>
+  </div>
+</div>
+
+<section id="live"><div class="wrap">
+  <div class="sk reveal">LIVE</div>
+  <h2 class="reveal">What your AI sees, right now.</h2>
+  <p class="sub reveal">Read from Solana in your browser, right now: every new pump.fun launch, decoded from pump.fun's own events the way PUMPMCP does it, with the dev's buy and the curve filling up.</p>
+  <div class="live reveal">
+    <div class="top"><span class="dot" id="ldot"></span><span id="lstat">connecting to Solana…</span><span class="r">launches seen <b id="lcount">0</b></span></div>
+    <div class="lrow h"><span>COIN</span><span>AGE</span><span>MARKET CAP</span><span>CURVE</span><span>NET SOL IN (5M)</span><span>SIGNALS</span></div>
+    <div id="lrows"></div>
+  </div>
+</div></section>
+
+<section id="tools"><div class="wrap">
+  <div class="sk reveal">TOOLS</div>
+  <h2 class="reveal">Ten tools. One sentence away.</h2>
+  <p class="sub reveal">Your assistant picks the right one on its own. You just ask.</p>
+  <div class="grid" id="toolGrid"></div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="sk reveal">HOW IT WORKS</div>
+  <h2 class="reveal">Straight from the chain.<br>Signed on your machine.</h2>
+  <div class="steps" style="margin-top:36px">
+    <div class="step reveal"><span class="n">01</span><b>Reads Solana directly</b><p>pump.fun's own CreateEvent and TradeEvent from the program logs, the bonding curve's reserves, token accounts and launch metadata. No scraping, no pump.fun account.</p></div>
+    <div class="step reveal"><span class="n">02</span><b>Builds, then signs locally</b><p>Trades are built by PumpPortal's local transaction API and signed on your computer with your own key. The key is never sent anywhere.</p></div>
+    <div class="step reveal"><span class="n">03</span><b>Simulates before sending</b><p>Every transaction is simulated first. No SOL, bad slippage, closed pool: nothing is sent and your AI tells you why.</p></div>
+  </div>
+  <div class="safe">
+    <div class="reveal"><span><b>Read-only by default.</b> Trading only switches on with PUMP_ALLOW_TRADING=true.</span></div>
+    <div class="reveal"><span><b>A hard cap per trade</b> (0.5 SOL unless you change it), for buys and dev buys.</span></div>
+    <div class="reveal"><span><b>Your client asks before every call.</b> Claude and Cursor show each tool call for approval.</span></div>
+    <div class="reveal"><span><b>Open source, MIT.</b> Every line is on GitHub. Read it before you run it.</span></div>
+  </div>
+</div></section>
+
+<section id="install" class="cta"><div class="wrap">
+  <img class="reveal" src="brand/pumpmcp_coin.png" alt="">
+  <h2 class="reveal">Give your AI the trenches.</h2>
+  <p class="sub reveal" style="margin:0 auto">One line. Works with Claude Code, Claude Desktop, Cursor and any MCP client. Node 22+.</p>
+  <div class="install reveal" data-ins>
+    <div class="tabs"><button class="on" data-k="code">Claude Code</button><button data-k="desktop">Claude Desktop</button><button data-k="cursor">Cursor</button></div>
+    <div class="cmd"></div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <span>PUMPMCP · open source, MIT</span>
+  <span>Independent project. Not affiliated with pump.fun, PumpPortal or Anthropic. Memecoins mostly go to zero; this is a tool, not advice.</span>
+  <div class="r"><a id="ghF" target="_blank" rel="noopener">GitHub</a><a id="xF" target="_blank" rel="noopener" style="display:none">X</a></div>
+</div></footer>
+
+<script type="module">
+import P from './project.config.js'
+const $ = (id) => document.getElementById(id)
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+for (const id of ['ghBtn', 'ghBtn2', 'ghF']) $(id).href = P.github
+if (P.x) { $('xBtn').href = P.x; $('xBtn').style.display = ''; $('xF').href = P.x; $('xF').style.display = '' }
+if (P.mint) {
+  $('caT').textContent = '$' + P.ticker; $('caV').textContent = P.mint.slice(0, 5) + '…' + P.mint.slice(-5); $('ca').classList.add('on')
+  $('caCopy').onclick = () => { navigator.clipboard?.writeText(P.mint); $('caCopy').textContent = 'Copied'; setTimeout(() => ($('caCopy').textContent = 'Copy CA'), 1400) }
+}
+
+// ---------------------------------------------------------------- install boxes
+const CMD = {
+  code: '<span class="p">$ </span>claude mcp add pump -- npx -y github:dodo1653/pump-mcp',
+  desktop: esc('{\n  "mcpServers": {\n    "pump": {\n      "command": "npx",\n      "args": ["-y", "github:dodo1653/pump-mcp"]\n    }\n  }\n}'),
+  cursor: esc('// .cursor/mcp.json\n{\n  "mcpServers": {\n    "pump": { "command": "npx", "args": ["-y", "github:dodo1653/pump-mcp"] }\n  }\n}'),
+}
+for (const box of document.querySelectorAll('[data-ins]')) {
+  const cmd = box.querySelector('.cmd')
+  const show = (k) => { cmd.innerHTML = CMD[k] + '<button class="copy">Copy</button>'; box.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.k === k))
+    cmd.querySelector('.copy').onclick = (e) => { navigator.clipboard?.writeText(cmd.textContent.replace(/^\$ /, '').replace(/Copy$/, '')); e.target.textContent = 'Copied'; setTimeout(() => (e.target.textContent = 'Copy'), 1400) } }
+  box.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => show(b.dataset.k)))
+  show('code')
+}
+
+// ---------------------------------------------------------------- tools
+const TOOLS = [
+  ['pump_new_launches', 'Every launch since your AI started watching: market cap, curve, buys, buyers, the dev\'s bag and whether they sold, bundled buys.', '"the hottest launches right now, dev hasn\'t sold"'],
+  ['pump_coin', 'One coin, everything: description and links, price, curve or DEX pair, holders, the dev, live flow. Warns on fake-liquidity copies.', '"what is this CA?"'],
+  ['pump_dev_history', 'Every coin a wallet launched and how each ended. Pass a coin and it checks its dev.', '"has this dev rugged before?"'],
+  ['pump_wallet', 'SOL and every token a wallet holds, valued live.', '"what\'s in my bag?"'],
+  ['pump_search', 'Find coins by name, ticker or address.', '"find the real $GOPAD"'],
+  ['pump_status', 'Feed, RPC, wallet and trading settings.', '"are you connected?"'],
+  ['pump_buy', 'Buy with SOL on the curve or the pool after graduation. Simulated first, capped.', '"buy 0.05 SOL of it"', 1],
+  ['pump_sell', 'Sell a percentage or an amount. Simulated first.', '"sell half"', 1],
+  ['pump_launch', 'Launch a coin: image and metadata to IPFS, create, dev buy.', '"launch $TEST with this image"', 1],
+  ['pump_claim_creator_fees', 'Claim the creator fees owed to your wallet.', '"claim my fees"', 1],
+]
+$('toolGrid').innerHTML = TOOLS.map(([n, d, ex, w]) => `<div class="card reveal"><div class="t">${n}<span class="${w ? 'w' : ''}">${w ? 'OPT-IN' : 'READ'}</span></div><p>${esc(d)}</p><div class="ex">${esc(ex)}</div></div>`).join('')
+
+// ---------------------------------------------------------------- reveal on scroll
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }), { threshold: .12 })
+document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (i < 8 ? i * .08 : 0) + 's'; io.observe(el) })
+
+// ---------------------------------------------------------------- the real session, replayed
+const md = (s) => {
+  let h = esc(s)
+  h = h.replace(/^\|(.+)\|\n\|[-| :]+\|\n((?:\|.*\|\n?)*)/gm, (_, head, body) => '<table><tr>' + head.split('|').map((c) => `<th>${c.trim()}</th>`).join('') + '</tr>' + body.trim().split('\n').map((r) => '<tr>' + r.replace(/^\||\|$/g, '').split('|').map((c) => `<td>${c.trim()}</td>`).join('') + '</tr>').join('') + '</table>')
+  h = h.replace(/^&gt; (.*)$/gm, '<blockquote>$1</blockquote>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>')
+  h = h.replace(/^- (.*)$/gm, '<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g, (m) => '<ul>' + m + '</ul>')
+  return h.split(/\n{2,}/).map((p) => (/^<(table|blockquote|ul)/.test(p) ? p : '<p>' + p.replace(/\n/g, '<br>') + '</p>')).join('')
+}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+async function replay() {
+  const D = await (await fetch('demo.json')).json(), log = $('log')
+  $('rec').textContent = `real session · ${D.client} · ${D.recorded}`
+  const add = (html, cls) => { const d = document.createElement('div'); d.className = 'msg ' + (cls || ''); d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d }
+  for (;;) {
+    log.innerHTML = ''
+    await sleep(600)
+    const you = add('<div class="you"></div>')
+    for (let i = 0; i <= D.prompt.length; i += 3) { you.firstChild.textContent = D.prompt.slice(0, i); await sleep(14) }
+    await sleep(700)
+    for (const s of D.steps) {
+      if (s.tool) {
+        const el = add(`<div class="tool"><div class="h"><span class="spin"></span>${esc(s.tool)} <small>${esc(JSON.stringify(s.args))}</small><span class="st">running</span></div></div>`)
+        await sleep(1300)
+        el.querySelector('.spin').outerHTML = '<span style="color:var(--g)">✓</span>'; el.querySelector('.st').textContent = 'done'
+        el.firstChild.insertAdjacentHTML('beforeend', `<pre>${esc(s.result || '')}</pre>`); log.scrollTop = log.scrollHeight
+        await sleep(1500)
+      } else {
+        const el = add('<div class="ai"></div>'), html = md(s.ai)
+        // reveal the answer block by block
+        const tmp = document.createElement('div'); tmp.innerHTML = html
+        for (const node of [...tmp.childNodes]) { el.firstChild.appendChild(node); log.scrollTop = log.scrollHeight; await sleep(520) }
+      }
+    }
+    await sleep(9000)
+  }
+}
+replay()
+
+// ---------------------------------------------------------------- live: pump.fun read from Solana in the browser
+// Every launch passes through pump.fun's mint-authority account, so its latest signatures are the latest launches.
+// Each launch transaction carries pump.fun's CreateEvent (and the dev's first buy); the curves are re-read every few seconds.
+const RPC = 'https://solana-rpc.publicnode.com', MINT_AUTH = 'TSLvdd1pWpHVjahSpsvCXUbgwsL3JAcvokwaKt1eokM'
+const D_CREATE = '1b72a94ddeeb6376', D_TRADE = 'bddb7fd34ee661ee'
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+const b58 = (b) => { let n = 0n; for (const x of b) n = n * 256n + BigInt(x); let s = ''; while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n } for (const x of b) { if (x) break; s = '1' + s } return s }
+const hex = (b) => [...b].map((x) => x.toString(16).padStart(2, '0')).join('')
+const bytes = (b64) => { const bin = atob(b64), b = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return b }
+function decodeEvent(b64) {
+  const b = bytes(b64), dv = new DataView(b.buffer); let o = 8
+  const u64 = () => { const v = Number(dv.getBigUint64(o, true)); o += 8; return v }, key = () => { const k = b58(b.subarray(o, o + 32)); o += 32; return k }
+  const str = () => { const n = dv.getUint32(o, true); o += 4; const s = new TextDecoder().decode(b.subarray(o, o + n)); o += n; return s }
+  try {
+    const d = hex(b.subarray(0, 8))
+    if (d === D_CREATE) { const name = str(), symbol = str(); str(); const mint = key(), curve = key(), user = key(), creator = key(); return { k: 'c', name, symbol, mint, curve, creator: creator || user } }
+    if (d === D_TRADE) { const mint = key(), sol = u64() / 1e9; u64(); const buy = b[o++] === 1, user = key(); return { k: 't', mint, sol, buy, user } }
+  } catch {}
+  return null
+}
+async function rpc(method, params) {
+  const r = await fetch(RPC, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) })
+  const j = await r.json(); if (j.error) throw new Error(j.error.message); return j.result
+}
+let solUsd = 0
+fetch('https://api.coinbase.com/v2/prices/SOL-USD/spot').then((r) => r.json()).then((j) => (solUsd = +j.data.amount)).catch(() => {})
+const coins = new Map(), seen = new Set(); let nLaunch = 0, since = 0, ok = false
+async function pollLaunches() {
+  try {
+    const sigs = await rpc('getSignaturesForAddress', [MINT_AUTH, { limit: 25, commitment: 'confirmed' }])
+    ok = true; since = since || Date.now()
+    const fresh = sigs.filter((s) => !s.err && !seen.has(s.signature)).reverse()
+    for (const s of fresh) seen.add(s.signature)
+    await Promise.all(fresh.slice(-12).map(async (s) => {
+      try {
+        const t = await rpc('getTransaction', [s.signature, { encoding: 'json', maxSupportedTransactionVersion: 1, commitment: 'confirmed' }])
+        const evs = (t?.meta?.logMessages || []).filter((l) => l.startsWith('Program data: ')).map((l) => decodeEvent(l.slice(14))).filter(Boolean)
+        const c = evs.find((e) => e.k === 'c'); if (!c) return
+        const devBuy = evs.filter((e) => e.k === 't' && e.buy && e.user === c.creator).reduce((a, e) => a + e.sol, 0)
+        coins.set(c.mint, { ...c, at: (s.blockTime || Date.now() / 1000) * 1000, devBuy, hist: [], fresh: true })
+        nLaunch++
+      } catch {}
+    }))
+    // track the 40 that matter: always the newest, then the ones with the most SOL in their curve
+    if (coins.size > 40) {
+      const drop = [...coins.values()].filter((c) => Date.now() - c.at > 30000).sort((a, b) => (a.rSol || 0) - (b.rSol || 0) || a.at - b.at)
+      for (const c of drop.slice(0, coins.size - 40)) coins.delete(c.mint)
+    }
+  } catch { ok = false }
+}
+async function pollCurves() {
+  const list = [...coins.values()]
+  for (let i = 0; i < list.length; i += 10) {     // the free endpoint reads 10 accounts per call
+    try {
+      const r = await rpc('getMultipleAccounts', [list.slice(i, i + 10).map((c) => c.curve), { encoding: 'base64', commitment: 'confirmed' }])
+      r.value.forEach((a, k) => {
+        if (!a) return
+        const b = bytes(a.data[0]), dv = new DataView(b.buffer), c = list[i + k]
+        const vTok = Number(dv.getBigUint64(8, true)) / 1e6, vSol = Number(dv.getBigUint64(16, true)) / 1e9, rTok = Number(dv.getBigUint64(24, true)) / 1e6, rSol = Number(dv.getBigUint64(32, true)) / 1e9
+        c.done = b[48] === 1
+        const std = Math.abs(vSol - rSol - 30) < .5            // a SOL curve in the layout we read
+        if (std && !c.done) { c.mc = (vSol / vTok) * 1e9; c.prog = Math.max(0, Math.min(100, (1 - rTok / 793.1e6) * 100)); c.rSol = rSol; c.hist.push([Date.now(), rSol]); while (c.hist.length && Date.now() - c.hist[0][0] > 300000) c.hist.shift() }
+        if (c.done) c.prog = 100
+      })
+    } catch {}
+  }
+}
+// net SOL into the curve over the last 5 minutes (since launch for coins younger than that)
+const flowOf = (c) => (Date.now() - c.at < 300000 ? c.rSol || 0 : c.hist.length > 1 ? c.hist[c.hist.length - 1][1] - c.hist[0][1] : 0)
+const usd = (v) => (v >= 1e6 ? '$' + (v / 1e6).toFixed(2) + 'M' : v >= 1e3 ? '$' + (v / 1e3).toFixed(1) + 'K' : '$' + v.toFixed(0))
+const age = (ms) => { const s = Math.max(0, Math.round((Date.now() - ms) / 1000)); return s < 60 ? s + 's' : s < 3600 ? Math.round(s / 60) + 'm' : (s / 3600).toFixed(1) + 'h' }
+function draw() {
+  $('lcount').textContent = nLaunch.toLocaleString(); $('ldot').classList.toggle('on', ok)
+  $('lstat').innerHTML = ok ? `<b>live</b> · pump.fun on Solana mainnet · watching ${age(since)}` : 'connecting to Solana…'
+  const rows = [...coins.values()].filter((c) => c.mc || c.done).map((c) => ({ c, flow: flowOf(c) })).sort((a, b) => b.flow - a.flow || b.c.at - a.c.at).slice(0, 10)
+  $('lrows').innerHTML = rows.map(({ c, flow }) => {
+    const sig = [c.done ? '<span class="tag ok">GRADUATED</span>' : '', !c.done && c.prog >= 70 ? '<span class="tag ok">NEAR GRAD</span>' : '', c.devBuy >= .05 ? `<span class="tag a">DEV BUY ${c.devBuy.toFixed(2)}</span>` : ''].filter(Boolean).join(' ') || '<span style="color:var(--faint)">-</span>'
+    const isNew = c.fresh; c.fresh = false
+    return `<a class="lrow${isNew ? ' new' : ''}" href="https://pump.fun/coin/${c.mint}" target="_blank" rel="noopener"><span class="n">$${esc(c.symbol)}<small>${esc(c.name)}</small></span><span>${age(c.at)}</span><span>${c.done ? 'on DEX' : solUsd ? usd(c.mc * solUsd) : '…'}</span><span><div class="bar2"><i style="width:${(c.prog || 0).toFixed(1)}%"></i></div></span><span class="${flow >= 0 ? 'up' : 'dn'}">${c.done ? '-' : (flow >= 0 ? '+' : '') + flow.toFixed(2) + ' SOL'}</span><span>${sig}</span></a>`
+  }).join('') || '<div class="lrow"><span style="color:var(--faint)">waiting for the next launch…</span></div>'
+}
+;(async function loop() { await pollLaunches(); await pollCurves(); draw(); setTimeout(loop, 4000) })()
+</script>
+</body>
+</html>

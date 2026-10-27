@@ -1,0 +1,32 @@
+{
+ "recorded": "2026-10-27",
+ "client": "Claude Code",
+ "prompt": "Show me the 3 hottest pump.fun launches right now. Pick the most promising one whose dev hasn't sold, pull its details and check the dev's launch history. Then give me a short verdict, trader style, under 70 words.",
+ "steps": [
+  {
+   "tool": "pump_new_launches",
+   "args": {
+    "sort": "hot",
+    "limit": 3
+   },
+   "result": "3 launches (watching for 22s, SOL $99.22):\n\n$JEFF (JEFF) 2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump\n  9s old · MC $3.4K · curve 13% · 5 buys / 0 sells · 5 buyers · 5m net +3.07 SOL\n  dev FhTP…BMNC holds 8.1% · 1 wallets bought in the launch block (0.5%)\n\n$$PATLU (MR. PATLU) Bhyzko7NUq4az1pz6U3tbNH34S1cvKhECgyaznsDpump\n  9s old · MC $3.1K · curve 0.4% · 9 buys / 7 sells · 4 buyers · 5m net +0.08 SOL\n  dev 32Qz…bBcm holds 0.2%\n\n$NPT (NPT PATTO DI 🩸) EbHnDyheUg9arfoytbZT5UDWEu8dSwWi5kytAHPWpump\n  1s old · MC $2.8K · curve 0.1% · 1 buys / 0 sells · 1 buyers · 5m net +0.02 SOL\n  dev 2FwU…qkEt holds 0.1%"
+  },
+  {
+   "tool": "pump_coin",
+   "args": {
+    "mint": "2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump"
+   },
+   "result": "$JEFF · JEFF · 2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump\nLinks: website https://www.instagram.com/jeff_funnyguy?obrf=aTZ5aHE3YWo3NDJ6\nOn the bonding curve: price 3.365e-8 SOL · MC $3.3K (33.646 SOL) · curve 12% · 2.910 SOL in the curve\nDev FhTPy8WsprLrbetyEAUJYYaXfChrKa2GGNxygorBMNC\nLive since launch (13s ago): 5 buys / 0 sells, 5 buyers, 3.073 SOL volume, 5m net 3.07 SOL. Dev bought 2.463 SOL, has not sold. 1 wallets bought in the launch block (0.5% of supply).\npump.fun: https://pump.fun/coin/2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump"
+  },
+  {
+   "tool": "pump_dev_history",
+   "args": {
+    "mint": "2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump"
+   },
+   "result": "FhTPy8WsprLrbetyEAUJYYaXfChrKa2GGNxygorBMNC launched 2 coin(s) in its last 150 transactions, 0 graduated:\n$JEFF 2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump · 52s ago · on the curve 12% · MC $3.3K (dead)\n$ㅤㅤㅤ ESNKUyKPdUReLkZcPLqqrqDoMo5VZj7Lr695UsTEpump · 12.6h ago · on the curve 0.1% · MC $2.8K (dead)"
+  },
+  {
+   "ai": "**Top 3 by 5‑minute net SOL inflow.** The tracker had only been watching for about 22 seconds, so this is a very small sample.\n\n| Coin | Age | MC | Curve | Flow |\n|---|---|---|---|---|\n| $JEFF | 9s | $3.4K | 13% | +3.07 SOL, 5 buys / 0 sells |\n| $PATLU | 9s | $3.1K | 0.4% | +0.08 SOL, 9 buys / 7 sells |\n| $NPT | 1s | $2.8K | 0.1% | +0.02 SOL, 1 buy |\n\n**Pick: $JEFF** (`2A476Vy4cKEn3igQF89QWhGQGaMoxamZE6TidDdQpump`)\n- **Dev:** `FhTP…BMNC` bought 2.463 SOL and hasn't sold. The dev holds 8.1% of supply.\n- **Launch block:** one wallet bought 0.5% of supply in it.\n- **Socials:** just an Instagram link. No X account, no Telegram.\n- **Dev history:** two launches and no graduations. The previous coin, 12.6h ago, had a blank name and died at 0.1% of the curve.\n\n**Verdict:**\n> JEFF's \"hot\" flow is mostly fake. Of the 3.07 SOL in, 2.46 is the dev's own buy, so real demand is about 0.6 SOL. The dev holds 8% and their last launch, a blank-named coin, died at 0.1% of the curve. The only social is an Instagram page. It's the best of a weak top three, but treat it as a pure lottery ticket. Size tiny, and get out the moment the dev sells. Skip it otherwise.\n\nThis isn't financial advice. Coins this new usually go to zero."
+  }
+ ]
+}
