@@ -78,7 +78,7 @@ server.registerTool('pump_coin', {
   const live = launches.get(mint)
   if (live) {
     const s = stats(live, su)
-    out.push(`Live since launch (${ago(live.createdAt)} ago): ${live.buys} buys / ${live.sells} sells, ${live.buyers.size} buyers, ${sol(live.volSol)} volume, 5m net ${s.netSol5m.toFixed(2)} SOL. Dev bought ${sol(live.devBoughtSol)}${live.devSoldSol ? ', sold ' + sol(live.devSoldSol) : ', has not sold'}.${live.bundle.size ? ` ${live.bundle.size} wallets bought in the launch block (${pct(s.bundlePct)} of supply).` : ''}`)
+    out.push(`Live since launch (${ago(live.createdAt)} ago): ${live.buys} buys / ${live.sells} sells, ${live.buyers.size} buyers, ${sol(live.volSol)} volume, 5m net from non-dev wallets ${s.netSol5m.toFixed(2)} SOL. Dev bought ${sol(live.devBoughtSol)}${live.devSoldSol ? ', sold ' + sol(live.devSoldSol) : ', has not sold'}.${live.bundle.size ? ` ${live.bundle.size} wallets bought in the launch block (${pct(s.bundlePct)} of supply).` : ''}`)
   }
   out.push(`pump.fun: https://pump.fun/coin/${mint}`)
   return text(out.join('\n'))
