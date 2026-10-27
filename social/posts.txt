@@ -15,7 +15,7 @@ PUMPMCP is an open-source MCP server: Claude, Cursor or any agent can watch ever
 $PUMPMCP
   reply 1: github.com/dodo1653/pump-mcp
   reply 2: [site]
-  reply 3: CA: [CA]
+  reply 3: CA: DeZkwv5XYj6ne8jKYENd5Wjf5ZPS3xAwUUbvwrbXpump
 
 --- 2. THE DEMO (screenshot of the verdict from the real session) ---
 asked Claude for the hottest launch on pump.fun.

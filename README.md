@@ -2,6 +2,8 @@
 
 **pump.fun for AI assistants.** An MCP server that lets Claude, Cursor, or any MCP client watch, research and trade pump.fun from a chat.
 
+$PUMPMCP: `DeZkwv5XYj6ne8jKYENd5Wjf5ZPS3xAwUUbvwrbXpump` · [pump.fun](https://pump.fun/coin/DeZkwv5XYj6ne8jKYENd5Wjf5ZPS3xAwUUbvwrbXpump) · [site](https://pumpmcp.vercel.app)
+
 > "Show me the hottest launch of the last five minutes whose dev hasn't sold."
 > "Who made this coin, and how did their other launches end?"
 > "Buy 0.05 SOL of it. Sell half at 2x."
