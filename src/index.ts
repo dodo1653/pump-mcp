@@ -33,7 +33,7 @@ server.registerTool('pump_new_launches', {
   if (sort === 'mcap') list.sort((a, b) => b.s.mcUsd - a.s.mcUsd)
   list = list.slice(0, limit)
   if (!list.length) return text(feed.connected ? `No launches match yet. Watching for ${ago(feed.since)} (${feed.launchesSeen} launches seen).` : 'The live feed is not connected yet' + (feed.lastError ? ': ' + feed.lastError : '') + '. Try again in a few seconds.')
-  const rows = list.map(({ c, s }) => `$${c.symbol} (${c.name}) ${c.mint}\n  ${ago(c.createdAt)} old · MC ${usd(s.mcUsd)} · curve ${pct(s.progress)}${c.complete ? ' GRADUATED' : ''} · ${c.buys} buys / ${c.sells} sells · ${c.buyers.size} buyers · 5m net ${s.netSol5m >= 0 ? '+' : ''}${s.netSol5m.toFixed(2)} SOL\n  dev ${short(c.creator)} holds ${pct(s.devPct)}${s.devSold ? ' (DEV SOLD ' + sol(c.devSoldSol) + ')' : ''}${c.bundle.size ? ` · ${c.bundle.size} wallets bought in the launch block (${pct(s.bundlePct)})` : ''}`)
+  const rows = list.map(({ c, s }) => `$${c.symbol} (${c.name}) ${c.mint}\n  ${ago(c.createdAt)} old · MC ${usd(s.mcUsd)} · curve ${pct(s.progress)}${c.complete ? ' GRADUATED' : ''} · ${c.buys} buys / ${c.sells} sells · ${c.buyers.size} buyers · 5m net ${s.netSol5m >= 0 ? '+' : ''}${s.netSol5m.toFixed(2)} SOL (dev excluded)\n  dev ${short(c.creator)} holds ${pct(s.devPct)}${s.devSold ? ' (DEV SOLD ' + sol(c.devSoldSol) + ')' : ''}${c.bundle.size ? ` · ${c.bundle.size} wallets bought in the launch block (${pct(s.bundlePct)})` : ''}`)
   return text(`${list.length} launches (watching for ${ago(feed.since)}, SOL ${usd(su)}):\n\n` + rows.join('\n\n'))
 }))
 
