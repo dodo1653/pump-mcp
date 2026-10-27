@@ -28,7 +28,7 @@ Needs Node 22 or newer.
 
 **Claude Code**
 ```bash
-claude mcp add pump -- npx -y pump-mcp
+claude mcp add pump -- npx -y github:dodo1653/pump-mcp
 ```
 
 **Claude Desktop / Cursor**: add to `claude_desktop_config.json` or `.cursor/mcp.json`:
@@ -37,7 +37,7 @@ claude mcp add pump -- npx -y pump-mcp
   "mcpServers": {
     "pump": {
       "command": "npx",
-      "args": ["-y", "pump-mcp"],
+      "args": ["-y", "github:dodo1653/pump-mcp"],
       "env": { "SOLANA_RPC_URL": "https://mainnet.helius-rpc.com/?api-key=YOUR_KEY" }
     }
   }
